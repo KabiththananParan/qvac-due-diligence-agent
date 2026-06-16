@@ -1,13 +1,37 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
 
 function Home() {
+  const [status, setStatus] = useState("Checking...");
 
-    return(
-        <div>
-            <h1>Home Page</h1>
-            <Link to="/upload">Go to Upload</Link>
-        </div>
-    )
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/health"
+        );
+
+        const data = await response.json();
+
+        if (data.status === "OK") {
+          setStatus("Connected");
+        } else {
+          setStatus("Disconnected");
+        }
+      } catch (error) {
+        setStatus("Disconnected");
+        console.log("Error checking backend status:", error);
+      }
+    };
+
+    checkBackend();
+  }, []);
+
+  return (
+    <div>
+      <h1>Home Page</h1>
+      <p>Backend Status: {status}</p>
+    </div>
+  );
 }
 
-export default Home
+export default Home;
